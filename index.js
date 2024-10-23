@@ -12,46 +12,80 @@ const users = [
 ];
 
 // GET : LIRE tous les utilisateurs
-app.get("/", (req, res) => {
-	res.json(users)
-})
-//PUT : MODIFIER un utilisateur basé sur les données envoyées dans le corps(body) et le paramètre apssé dans l'URL
-app.put("/",(req,res)=> {
-    res.json({
-        msg: "hello rest api ici le PUT",
-    })
-})
+app.get("/users", (req, res) => {
+	res.json(users);
+});
 
-//DELETE : supprimer un utilisateur basé sur le paramètre passé dans l'URL
-app.delete("/",(req,res)=>{
-    res.json({
-        msg: "hello rest api ici le DELETE",
-    })
-})
+// PUT : MODIFIER un utilisateur en fonction de son ID
+app.put("/users/:id", (req, res) => {
+    // Récupérer l'ID de l'utilisateur à modifier depuis les paramètres d'URL
+	const id = parseInt(req.params.id);
 
-/// POST : CRÉER un nouvel utilisateur, basé sur les données passées dans le corps(body) de la requête
-app.post("/", (req, res) => {
-	// récupérer toutes les données qui arrivent dans le corps de la requête (body)
-	const { firstName, lastName } = req.body
+    // Récupérer les données envoyées dans le corps de la requête
+	const { firstName, lastName } = req.body;
 
-	// récupérer l'ID du dernier utilisateur en fonction du nombre d'utilisateurs dans notre variable de tableau 'users'.
-	const lastId = users[users.length - 1].id
-	// ajouter un pour créer un utilisateur unique
-	const newId = lastId + 1
+    // Trouver l'utilisateur avec l'ID correspondant
+	const userIndex = users.findIndex((user) => user.id === id);
 
-	// créer le nouvel utilisateur avec les données du corps de la requête et l'ID calculé
-	const newUser = {
-		firstName,
-		lastName,
-		id: newId,
+	// Si l'utilisateur n'est pas trouvé, retourner une erreur 404
+	if (userIndex < 0) {
+		return res.status(404).json({ msg: "Utilisateur non trouvé" });
 	}
 
-	// ajouter le nouvel utilisateur à notre liste d'utilisateurs en utilisant la méthode 'push'
-	users.push(newUser)
-	// envoyer le code de statut 201 (créé) et les données du nouvel utilisateur afin de confirmer au client.
-	res.status(201).json(newUser)
-})
+    // Mettre à jour les champs qui ont été envoyés
+	if (firstName) users[userIndex].firstName = firstName;
+	if (lastName) users[userIndex].lastName = lastName;
 
+    // Renvoyer une réponse avec les données mises à jour de l'utilisateur
+	res.json({
+		msg: "Utilisateur mis à jour",
+		user: users[userIndex],
+	});
+});
+
+// DELETE : SUPPRIMER un utilisateur en fonction de son ID
+app.delete("/users/:id", (req, res) => {
+	const id = parseInt(req.params.id);
+	const userIndex = users.findIndex((user) => user.id === id);
+
+	// Si l'utilisateur n'est pas trouvé, retourner une erreur 404
+	if (userIndex < 0) {
+		return res.status(404).json({ msg: "Utilisateur non trouvé" });
+	}
+
+	// Supprimer l'utilisateur du tableau
+	users.splice(userIndex, 1);
+
+	// Renvoyer une réponse confirmant la suppression
+	res.json({
+		msg: "Utilisateur supprimé",
+	});
+});
+
+// POST : CRÉER un nouvel utilisateur
+app.post("/users", (req, res) => {
+	const { firstName, lastName } = req.body;
+
+	// Récupérer l'ID du dernier utilisateur pour générer un nouvel ID unique
+	const lastId = users[users.length - 1].id;
+	const newId = lastId + 1;
+
+	// Créer un nouvel utilisateur
+	const newUser = {
+		id: newId,
+		firstName,
+		lastName,
+		role: 'user', // Ajout d'un rôle par défaut
+	};
+
+	// Ajouter le nouvel utilisateur à la liste des utilisateurs
+	users.push(newUser);
+
+	// Envoyer une réponse avec un statut 201 et les données du nouvel utilisateur
+	res.status(201).json(newUser);
+});
+
+// Lancement du serveur
 app.listen(port, () => {
 	console.log(`Serveur en cours d'exécution sur http://localhost:${port}`);
 });
