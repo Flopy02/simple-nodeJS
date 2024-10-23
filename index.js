@@ -16,6 +16,23 @@ app.get("/users", (req, res) => {
 	res.json(users);
 });
 
+// GET : LIRE un seul utilisateur en fonction de son ID
+app.get("/users/:id", (req, res) => {
+    // Récupérer l'ID de l'utilisateur à afficher depuis les paramètres d'URL
+	const id = parseInt(req.params.id);
+
+    // Trouver l'utilisateur avec l'ID correspondant
+	const userIndex = users.findIndex((user) => user.id === id);
+
+	// Si l'utilisateur n'est pas trouvé, retourner une erreur 404
+	if (userIndex < 0) {
+		return res.status(404).json({ msg: "Utilisateur non trouvé" });
+	}
+
+    // Si l'utilisateur est trouvé, renvoyer les données de l'utilisateur
+	res.json(users[userIndex]);
+});
+
 // PUT : MODIFIER un utilisateur en fonction de son ID
 app.put("/users/:id", (req, res) => {
     // Récupérer l'ID de l'utilisateur à modifier depuis les paramètres d'URL
