@@ -35,3 +35,5 @@ function insertUsers() {
 
 // Exécuter la fonction d'insertion
 insertUsers()
+
+

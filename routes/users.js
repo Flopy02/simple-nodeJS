@@ -1,11 +1,14 @@
 const express = require("express")
 const router = express.Router()
-const { getAllUsers } = require("../controllers/usersControllers")
+const { getAllUsers,createNewUser } = require("../controllers/usersControllers")
 
 const db = require("../database")
 
-
+// GET METHOD
 router.get("/users",getAllUsers)
+
+// POST : CRÉER un nouvel utilisateur
+router.post("/users",createNewUser )
 
 // PUT : MODIFIER un utilisateur en fonction de son ID
 router.put("/users/:id", (req, res) => {
@@ -54,28 +57,7 @@ router.delete("/users/:id", (req, res) => {
 //
 );
 
-// POST : CRÉER un nouvel utilisateur
-router.post("/users", (req, res) => {
-	//const { firstName, lastName } = req.body;
 
-	// Récupérer l'ID du dernier utilisateur pour générer un nouvel ID unique
-	//const lastId = users[users.length - 1].id;
-	//const newId = lastId + 1;
-
-	// Créer un nouvel utilisateur
-	//const newUser = {
-		//id: newId,
-		///firstName,
-		//lastName,
-		//role: 'user', // Ajout d'un rôle par défaut
-	//};
-
-	// Ajouter le nouvel utilisateur à la liste des utilisateurs
-	//users.push(newUser);
-
-	// Envoyer une réponse avec un statut 201 et les données du nouvel utilisateur
-	//res.status(201).json(newUser);
-})
 
 
 module.exports = router
